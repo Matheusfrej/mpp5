@@ -45,14 +45,14 @@ def receberDoCliente():
         
         # enquanto tiver dados para chegar, vai receber e escrever
         while data:
-            contador += 1024    
+            contador += 1    
             f.write(data)
             print(contador)
             data = UDPServerSocket.recv(bufferSize)
             tamanhoEmBytesDownload  += sys.getsizeof(data)
             
             # identifica se o pacote acabou
-            if b'<batata>' in data:
+            if b'<fim>' in data:
                 break
 
     # fim do download
@@ -91,6 +91,7 @@ def enviarParaCliente():
         while tamanhoEmBytes < 52428800:
           
           ack += 1
+          # -3 é por conta do separador
           bytesEnviados = f.read(bufferSize-len(str(ack)) - 3)
 
           stringByte = str(ack) + separationCarac + bytesEnviados.decode('utf-8')
@@ -107,7 +108,7 @@ def enviarParaCliente():
         
         sleep(1)
         # para sinalizar que acabou o pacote
-        UDPServerSocket.sendto(bytes('<batata>', 'utf-8'), bytesAdressPair)
+        UDPServerSocket.sendto(bytes('<fim>', 'utf-8'), bytesAdressPair)
         
 
     f.close()
