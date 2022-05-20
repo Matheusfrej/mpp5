@@ -1,5 +1,4 @@
 from socket import *
-import os
 import sys
 from time import sleep
 from time import time
@@ -12,7 +11,7 @@ separationCarac = '<@>'
 
 bytesAdressPair = (('191.187.142.61', porta))
 
-# Inicializando taxas
+# Inicializando valores
 finalDownload = 0
 perdaDownload = 0
 totalDownload = 0
@@ -43,14 +42,14 @@ def receberDoServidor():
         
         # enquanto tiver dados para chegar, vai receber e escrever
         while data:
-            contador += 1024    
+            contador += 1 
             f.write(data)
             print(contador)
             data = s.recv(bufferSize)
             tamanhoEmBytesDownload  += sys.getsizeof(data)
             
             # identifica se o pacote acabou
-            if b'<batata>' in data:
+            if b'<fim>' in data:
                 break
     # fim do download
     finalDownload = time()
@@ -86,6 +85,7 @@ def enviarParaServidor():
         while tamanhoEmBytes < 52428800:
           
           ack += 1
+          # -3 é por conta do separador
           bytesEnviados = f.read(bufferSize-len(str(ack)) - 3)
 
           stringByte = str(ack) + separationCarac + bytesEnviados.decode('utf-8')
@@ -98,7 +98,7 @@ def enviarParaServidor():
           s.sendto(byteString, bytesAdressPair)
       
         sleep(1)
-        s.sendto(bytes('<batata>', 'utf-8'), bytesAdressPair)
+        s.sendto(bytes('<fim>', 'utf-8'), bytesAdressPair)
         
 
     f.close()
